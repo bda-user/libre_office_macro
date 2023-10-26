@@ -1,4 +1,4 @@
-REM Author: Dmitry A. Borisov, ddaabb@mail.ru (CC BY 4.0)
+﻿REM Author: Dmitry A. Borisov, ddaabb@mail.ru (CC BY 4.0)
 Option VBASupport 1
 
 Const STYLE_HEAD = "Heading"
@@ -170,15 +170,15 @@ continue:
     Loop
 End Sub
 
-Sub ExportToFile (ByRef text_ As String, Optional suffix = "_export.txt")
+Sub ExportToFile (ByRef text_ As String, Comp As Object, Optional suffix = "_export.txt")
     Dim FileNo As Integer, Filename As String
-    Filename = convertToURL(replace(convertFromURL(ThisComponent.URL), ".odt", suffix))
+    Filename = convertToURL(replace(convertFromURL(Comp.URL), ".odt", suffix))
 	FileNo = Freefile
 	Open Filename For Output As #FileNo
 	Print #FileNo, text_
 End Sub
 
-Function MakeModel As Node
+Function MakeModel(ByRef Comp As Object) As Node
     Dim sectionNames As New Collection
     Dim docTree As Node
     With docTree
@@ -188,7 +188,7 @@ Function MakeModel As Node
     End With
  
     ' Enumerate paragraphs, include tables
-    Dim paraEnum : paraEnum = ThisComponent.getText().createEnumeration()
+    Dim paraEnum : paraEnum = Comp.getText().createEnumeration()
     Dim curPara
     If paraEnum.hasMoreElements() Then
         curPara = paraEnum.nextElement()
@@ -197,29 +197,55 @@ Function MakeModel As Node
     MakeModel = docTree
 End Function
 
-Sub MakeDocHtmlView
+Sub MakeDocHtmlView(Optional Comp As Object)
+    Dim doc As Object : doc = ThisComponent
+    If Comp Then doc = Comp
+
     Dim dView As New DocView : dView = New DocView
     Dim vHtml As New ViewHtml : vHtml = New ViewHtml
     vHtml.docView = dView
-    dView.docTree = MakeModel()
+    dView.docTree = MakeModel(doc)
     dView.viewAdapter = vHtml
     dView.props = New Collection
     With dView.props
         .Add(True, "CodeLineNum") ' Enumerate code lines 1, 2, 3 ... n
     End With
-    ExportToFile dView.MakeView(), "_export.html"
+    ExportToFile dView.MakeView(), doc, "_export.html"
 End Sub
 
-Sub MakeDocHfmView
+Sub MakeDocHfmView(Optional Comp As Object)
+    Dim doc As Object : doc = ThisComponent
+    If Comp Then doc = Comp
+
     Dim dView As New DocView : dView = New DocView
     Dim vHfm As New ViewHfm : vHfm = New ViewHfm
     vHfm.docView = dView
-    dView.docTree = MakeModel()
+    dView.docTree = MakeModel(doc)
     dView.viewAdapter = vHfm
     dView.props = New Collection
     With dView.props
         .Add(True, "CodeLineNum") ' Enumerate code lines 1, 2, 3 ... n
     End With
-    ExportToFile dView.MakeView(), "_export_hfm.txt"
+    ExportToFile dView.MakeView(), doc, "_export_hfm.txt"
+End Sub
+
+' "C:\Program Files\LibreOffice\program\soffice.exe"  --invisible --nofirststartwizard --headless --norestore macro:///DocExport.DocModel.ExportDir("D:\cpp\habr\002-hfm",0)
+Sub ExportDir(Folder As String, Optional Hfm As Boolean = True)  
+    Dim Props(0) as New com.sun.star.beans.PropertyValue
+    Props(0).NAME = "Hidden" 
+    Props(0).Value = True 
+    Dim Comp As Object
+    Dim url, fname As String : fname = Dir$(Folder + "\" + "*.odt", 0)    
+    Do
+        url = ConvertToUrl(Folder + "\" + fname)
+        Comp = StarDesktop.loadComponentFromURL(url, "_blank", 0, Props)
+        If Hfm Then
+            MakeDocHfmView Comp
+        Else
+            MakeDocHtmlView Comp
+        End If
+        fname = Dir$
+        call Comp.close(True)
+    Loop Until fname = ""
 End Sub
 

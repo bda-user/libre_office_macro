@@ -1,4 +1,4 @@
-REM Author: Dmitry A. Borisov, ddaabb@mail.ru (CC BY 4.0)
+﻿REM Author: Dmitry A. Borisov, ddaabb@mail.ru (CC BY 4.0)
 Option Explicit
 Option Compatible
 Option ClassModule
@@ -123,7 +123,11 @@ Function FormatPara(ByRef txt, level As Long, extra As Long)
 End Function
 
 Function Formula(ByRef txt As String)
-    Formula = " " & txt & " "
+    Dim m As New mMath
+    m.Set_Formula(txt)
+    m.vAdapter = New vLatex
+    m.vAdapter.mMath = m
+    Formula = "$$" & CHR$(10) & m.Get_Formula() & CHR$(10) &  "$$" & CHR$(10)
 End Function
 
 Function Section(ByRef nodeSec)
