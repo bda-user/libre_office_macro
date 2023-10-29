@@ -45,7 +45,7 @@ Function Code(ByRef node)
     End If
     Dim shift As String : shift = String(node.level * SHIFT_CNT, " ")
     Code = shift & "<pre class=""code " & Split(node.name_, "_")(1) & """>" & _
-        CHR$(10) & Code & shift & "</pre>" & CHR$(10)
+        CHR$(10) & Escape_Characters(Code) & shift & "</pre>" & CHR$(10)
 End Function
 
 Function ParaStyle(ByRef node)
