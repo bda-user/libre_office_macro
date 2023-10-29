@@ -1,4 +1,4 @@
-REM Author: Dmitry A. Borisov, ddaabb@mail.ru (CC BY 4.0)
+﻿REM Author: Dmitry A. Borisov, ddaabb@mail.ru (CC BY 4.0)
 Option Explicit
 Option Compatible
 Option ClassModule
@@ -43,7 +43,7 @@ Function PrintNodeParaLO(ByRef oPara, level As Long, Optional lineNum As Integer
         oPara.createContentEnumeration("com.sun.star.text.TextContent")
     Dim curContent, s As String : s = ""
     
-    If Not IsMissing (lineNum) AND lineNum > 0 Then s = s & lineNum & " "
+    If Not IsMissing (lineNum) AND lineNum > 0 Then s = s & Format_Num(lineNum) & " "
     
     Do While contEnum.hasMoreElements()
         curContent = contEnum.nextElement()           

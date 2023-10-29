@@ -2,6 +2,7 @@
 Option VBASupport 1
 
 Const STYLE_HEAD = "Heading"
+Const CODE_LINE_NUM = True
 
 Enum NodeType
     Section = 1
@@ -208,7 +209,7 @@ Sub MakeDocHtmlView(Optional Comp As Object)
     dView.viewAdapter = vHtml
     dView.props = New Collection
     With dView.props
-        .Add(True, "CodeLineNum") ' Enumerate code lines 1, 2, 3 ... n
+        .Add(CODE_LINE_NUM, "CodeLineNum") ' Enumerate code lines 1, 2, 3 ... n
     End With
     ExportToFile dView.MakeView(), doc, "_export.html"
 End Sub
@@ -224,12 +225,12 @@ Sub MakeDocHfmView(Optional Comp As Object)
     dView.viewAdapter = vHfm
     dView.props = New Collection
     With dView.props
-        .Add(True, "CodeLineNum") ' Enumerate code lines 1, 2, 3 ... n
+        .Add(CODE_LINE_NUM, "CodeLineNum") ' Enumerate code lines 1, 2, 3 ... n
     End With
     ExportToFile dView.MakeView(), doc, "_export_hfm.txt"
 End Sub
 
-' "C:\Program Files\LibreOffice\program\soffice.exe"  --invisible --nofirststartwizard --headless --norestore macro:///DocExport.DocModel.ExportDir("D:\cpp\habr\002-hfm",0)
+' "C:\Program Files\LibreOffice\program\soffice.exe" --invisible --nofirststartwizard --headless --norestore macro:///DocExport.DocModel.ExportDir("D:\cpp\habr\002-hfm",0)
 Sub ExportDir(Folder As String, Optional Hfm As Boolean = True)  
     Dim Props(0) as New com.sun.star.beans.PropertyValue
     Props(0).NAME = "Hidden" 
