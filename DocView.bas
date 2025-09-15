@@ -142,10 +142,11 @@ Function PrintNodeTable(ByRef nodeTable)
     PrintNodeTable = viewAdapter.FormatTable(t, nodeTable.level)
 End Function
 
-Function PrintTree(ByRef node, Optional ByRef props As Collection)
+Function PrintTree(ByRef node, Optional ByRef props_par As Collection)
     Dim child, lineNum : lineNum = 0
     Dim s : s = ""
-    If Not IsMissing(props) And props("CodeLineNum") Then lineNum = 1
+    If Not IsMissing(props_par) Then props = props_par
+    If props("CodeLineNum") Then lineNum = 1
     For Each child In node.children
         If child.type_ = NodeType.Section Then
             s = s & viewAdapter.Section(child)
